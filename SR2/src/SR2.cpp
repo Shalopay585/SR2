@@ -85,6 +85,10 @@ void parseXMLNode(ifstream& file, Node& node)
 						 << "] for opening tag [" << node.tag << "] !\n";
 					exit(1);
 				}
+				if (node.children.size() > 0)
+				{
+					node.text.clear();
+				}
 				return;
 			}
 			else
@@ -119,10 +123,10 @@ Node parseXML(const string& fileName)
 	}
 }
 
-main()
+int main()
 {
+	Node root = parseXML("test.xml");
 	
-
 
 	return 0;
 }
