@@ -27,7 +27,73 @@ enum State
 
 void parseXMLNode(ifstream& file, Node& node)
 {
-	// Recursive node parsing
+	State state = State::Text;
+	string tag, text;
+
+	char ch;
+	while(file.get(ch))
+	{
+		switch(state)
+		{
+		case State::Text:
+			if (ch == '<')
+			{
+				state = State::Tag;
+				if (!text.empty())
+				{
+					node.text = text;
+					text.clear();
+				}
+			}
+			else
+			{
+				text += ch;
+			}
+			break;
+		case State::Tag:
+			if (ch == '/')
+			{
+				state = State::CloseTag;
+			}
+			else
+			{
+				state = State::OpenTag;
+				tag += ch;
+			}
+			break;
+		case State::OpenTag:
+			if (ch == '>')
+			{
+				state = State::Text;
+				Node child(tag);
+				node.children.push_back(child);
+				parseXMLNode(file, node.children.back());
+				tag.clear();
+			}
+			else
+			{
+				tag += ch;
+			}
+			break;
+		case State::CloseTag:
+			if (ch == '>')
+			{
+				state = State::Text;
+				if (tag != node.tag)
+				{
+					cerr << "Error: invalid closing tag [" << tag
+						 << "] for opening tag [" << node.tag << "] !\n";
+					exit(1);
+				}
+				return;
+			}
+			else
+			{
+				tag += ch;
+			}
+			break;
+		}
+	}
 }
 
 Node parseXML(const string& fileName)
@@ -43,7 +109,9 @@ Node parseXML(const string& fileName)
 	parseXMLNode(file, root);
 
 	if (root.children.size() == 1)
+	{
 		return root.children[0];
+	}
 	else
 	{
 		cerr << "Error: Invalid XML format\n";
