@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <iomanip>
 #include <string>
 #include <vector>
 using namespace std;
@@ -125,7 +124,9 @@ Node parseXML(const string& fileName)
 
 void Node::printTree(const string &tab = "") const
 {
-	cout << tab << tag << ": " << text << endl;
+	string tmpTag = tag;
+	tmpTag[0] = toupper(tmpTag[0]);
+	cout << tab << tmpTag << ": " << text << endl;
 	for (const Node& child : children)
 	{
 		child.printTree(tab + '\t');
