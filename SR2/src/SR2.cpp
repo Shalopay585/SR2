@@ -15,7 +15,15 @@ public:
 	Node(const string& tag) : tag(tag) {}
 
 	void printTree() const;
-}
+};
+
+enum State
+{
+	Text,
+	Tag,
+	OpenTag,
+	CloseTag
+};
 
 main()
 {
