@@ -14,7 +14,7 @@ public:
 
 	Node(const string& tag) : tag(tag) {}
 
-	void printTree() const;
+	void printTree(const string &tab) const;
 };
 
 enum State
@@ -123,10 +123,19 @@ Node parseXML(const string& fileName)
 	}
 }
 
+void Node::printTree(const string &tab = "") const
+{
+	cout << tab << tag << ": " << text << endl;
+	for (const Node& child : children)
+	{
+		child.printTree(tab + '\t');
+	}
+}
+
 int main()
 {
 	Node root = parseXML("test.xml");
-	
+	root.printTree();
 
 	return 0;
 }
