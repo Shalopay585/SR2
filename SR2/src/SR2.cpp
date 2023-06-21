@@ -11,6 +11,7 @@ public:
 	string text;
 	vector<Node> children;
 
+	Node() {}
 	Node(const string &tag) : tag(tag) {}
 
 	void printTree(const string &tab) const;
