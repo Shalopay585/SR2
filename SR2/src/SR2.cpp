@@ -14,6 +14,7 @@ public:
 	Node(const string& tag) : tag(tag) {}
 
 	void printTree(const string &tab) const;
+	void saveToXML(ofstream& file, const string& tab) const;
 };
 
 enum State
@@ -133,10 +134,46 @@ void Node::printTree(const string &tab = "") const
 	}
 }
 
+void Node::saveToXML(ofstream& file, const string& tab) const
+{
+	file << tab << "<" << tag << ">";
+
+	if (!text.empty())
+		file << text;
+
+	if (!children.empty())
+	{
+		file << endl << endl;
+		for (const Node& child : children)
+			child.saveToXML(file, tab + '\t');
+
+		file << tab;
+	}
+
+	file << "</" << tag << ">" << endl << endl;
+}
+
+void saveXML(const Node& root, const string& fileName)
+{
+	ofstream file(fileName);
+	if (!file.is_open())
+	{
+		cerr << "Error: Cannot open " << fileName << "!\n";
+		exit(1);
+	}
+
+	root.saveToXML(file, "");
+
+	file.close();
+	cout << "XML file saved as " << fileName << endl;
+}
+
 int main()
 {
 	Node root = parseXML("test.xml");
 	root.printTree();
+	
+	saveXML(root, "test.xml");
 
 	return 0;
 }
