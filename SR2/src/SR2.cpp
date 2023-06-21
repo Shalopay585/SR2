@@ -11,7 +11,7 @@ public:
 	string text;
 	vector<Node> children;
 
-	Node(const string& tag) : tag(tag) {}
+	Node(const string &tag) : tag(tag) {}
 
 	void printTree(const string &tab) const;
 };
@@ -24,15 +24,15 @@ enum State
 	CloseTag
 };
 
-void parseXMLNode(ifstream& file, Node& node)
+void parseXMLNode(ifstream &file, Node &node)
 {
 	State state = State::Text;
 	string tag, text;
 
 	char ch;
-	while(file.get(ch))
+	while (file.get(ch))
 	{
-		switch(state)
+		switch (state)
 		{
 		case State::Text:
 			if (ch == '<')
@@ -99,10 +99,10 @@ void parseXMLNode(ifstream& file, Node& node)
 	}
 }
 
-Node parseXML(const string& fileName)
+Node parseXML(const string &fileName)
 {
 	ifstream file(fileName);
-    if (!file.is_open())
+	if (!file.is_open())
 	{
 		cerr << "Error: " << fileName << " not found!\n";
 		exit(1);
@@ -127,7 +127,7 @@ void Node::printTree(const string &tab = "") const
 	string tmpTag = tag;
 	tmpTag[0] = toupper(tmpTag[0]);
 	cout << tab << tmpTag << ": " << text << endl;
-	for (const Node& child : children)
+	for (const Node &child : children)
 	{
 		child.printTree(tab + '\t');
 	}
