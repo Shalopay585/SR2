@@ -161,7 +161,19 @@ void compareXML(const Node& first, const Node& second, Node& diff, const string&
 	     ++i;
 	     ++j;
 	 }
+	 while (i < first.children.size()) {
+	        Node childDiff = first.children[i];
+	        childDiff.tag += " [" + source1 + "]";
+	        diff.children.push_back(childDiff);
+	        ++i;
+	    }
 
+	    while (j < second.children.size()) {
+	        Node childDiff = second.children[j];
+	        childDiff.tag += " [" + source2 + "]";
+	        diff.children.push_back(childDiff);
+	        ++j;
+	    }
 }
 void printDiff(const Node& diff, const string& indent = "", const string& source = "") {
 	bool printAll = true;
