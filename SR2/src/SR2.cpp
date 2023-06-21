@@ -169,6 +169,14 @@ void printDiff(const Node& diff, const string& indent = "", const string& source
     	cout << indent << diff.tag << "" << endl;
         for (const Node& child : diff.children) {
             printDiff(child, indent + "\t", source);
+        }else {
+            if (printAll) {
+                cout << indent << diff.tag << ": " << diff.text;
+                if (!source.empty()) {
+                    cout << " [" << source << "]";
+                }
+                cout << endl;
+            }
         }
 int main()
 {
