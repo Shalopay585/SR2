@@ -136,7 +136,8 @@ void Node::printTree(const string &tab = "") const
 
 void compareXML(const Node& first, const Node& second, Node& diff, const string& source1 = "", const string& source2 = "")
 {
-	 if (first.tag != second.tag || first.text != second.text) {
+	 if (first.tag != second.tag || first.text != second.text)
+	 {
 	        if (diff.tag.empty()) {
 	            diff.tag = first.tag;
 	        }
@@ -148,6 +149,18 @@ void compareXML(const Node& first, const Node& second, Node& diff, const string&
 	        diff.children.push_back(secondCopy);
 	        return;
 	    }
+	 int i = 0; j = 0;
+	 while (i < first.children.size() && j < second.children.size())
+	 {
+	     Node childDiff;
+	     compareXML(first.children[i], second.children[j], childDiff, source1, source2);
+	     if (!childDiff.tag.empty() || !childDiff.text.empty() || !childDiff.children.empty()) {
+	         diff.children.push_back(childDiff);
+	     }
+	     ++i;
+	     ++j;
+	 }
+
 }
 
 int main()
