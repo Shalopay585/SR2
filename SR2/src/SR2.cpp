@@ -15,6 +15,7 @@ public:
 	Node(const string &tag) : tag(tag) {}
 
 	void printTree(const string &tab) const;
+	void printDiff(const Node& diff, const string& parentTags = "");
 };
 
 enum State
@@ -162,11 +163,22 @@ void compareXML(const Node& first, const Node& second, Node& diff, const string&
 	 }
 
 }
-
+void printDiff(const Node& diff, const string& indent = "", const string& source = "") {
+	bool printAll = true;
+    if (!diff.children.empty()) {
+    	cout << indent << diff.tag << "" << endl;
+        for (const Node& child : diff.children) {
+            printDiff(child, indent + "\t", source);
+        }
 int main()
 {
-	Node root = parseXML("test.xml");
-	root.printTree();
+	Node first = parseXML("file1.xml");
+	Node second = parseXML("file2.xml");
+	Node diff;
+	compareXML(first, second, diff);
+	cout << "----------------------------------------\n";
+	printDiff(diff);
+
 
 	return 0;
 }
