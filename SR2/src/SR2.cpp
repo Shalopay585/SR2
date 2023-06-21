@@ -134,6 +134,22 @@ void Node::printTree(const string &tab = "") const
 	}
 }
 
+void compareXML(const Node& first, const Node& second, Node& diff, const string& source1 = "", const string& source2 = "")
+{
+	 if (first.tag != second.tag || first.text != second.text) {
+	        if (diff.tag.empty()) {
+	            diff.tag = first.tag;
+	        }
+	        Node firstCopy = first;
+	        Node secondCopy = second;
+	        firstCopy.tag = "[file1]";
+	        secondCopy.tag = "[file2]";
+	        diff.children.push_back(firstCopy);
+	        diff.children.push_back(secondCopy);
+	        return;
+	    }
+}
+
 int main()
 {
 	Node root = parseXML("test.xml");
