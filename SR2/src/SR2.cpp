@@ -15,7 +15,7 @@ public:
 	Node(const string &tag) : tag(tag) {}
 
 	void printTree(const string &tab) const;
-	void printDiff(const Node& diff, const string& parentTags = "");
+	void printDiff(const Node &diff, const string &parentTags = "");
 };
 
 enum State
@@ -135,64 +135,74 @@ void Node::printTree(const string &tab = "") const
 	}
 }
 
-void compareXML(const Node& first, const Node& second, Node& diff, const string& source1 = "", const string& source2 = "")
+void compareXML(const Node &first, const Node &second, Node &diff, const string &source1 = "", const string &source2 = "")
 {
-	 if (first.tag != second.tag || first.text != second.text)
-	 {
-	        if (diff.tag.empty()) {
-	            diff.tag = first.tag;
-	        }
-	        Node firstCopy = first;
-	        Node secondCopy = second;
-	        firstCopy.tag = "[file1]";
-	        secondCopy.tag = "[file2]";
-	        diff.children.push_back(firstCopy);
-	        diff.children.push_back(secondCopy);
-	        return;
-	 }
-	 int i = 0, j = 0;
-	 while (i < first.children.size() && j < second.children.size())
-	 {
-	     Node childDiff;
-	     compareXML(first.children[i], second.children[j], childDiff, source1, source2);
-	     if (!childDiff.tag.empty() || !childDiff.text.empty() || !childDiff.children.empty()) {
-	         diff.children.push_back(childDiff);
-	     }
-	     ++i;
-	     ++j;
-	 }
-	 	 while (i < first.children.size()) {
-	        Node childDiff = first.children[i];
-	        childDiff.tag += " [" + source1 + "]";
-	        diff.children.push_back(childDiff);
-	        ++i;
-	    }
+	if (first.tag != second.tag || first.text != second.text)
+	{
+		if (diff.tag.empty())
+		{
+			diff.tag = first.tag;
+		}
+		Node firstCopy = first;
+		Node secondCopy = second;
+		firstCopy.tag = "[file1]";
+		secondCopy.tag = "[file2]";
+		diff.children.push_back(firstCopy);
+		diff.children.push_back(secondCopy);
+		return;
+	}
+	int i = 0, j = 0;
+	while (i < first.children.size() && j < second.children.size())
+	{
+		Node childDiff;
+		compareXML(first.children[i], second.children[j], childDiff, source1, source2);
+		if (!childDiff.tag.empty() || !childDiff.text.empty() || !childDiff.children.empty())
+		{
+			diff.children.push_back(childDiff);
+		}
+		++i;
+		++j;
+	}
+	while (i < first.children.size())
+	{
+		Node childDiff = first.children[i];
+		childDiff.tag += " [" + source1 + "]";
+		diff.children.push_back(childDiff);
+		++i;
+	}
 
-	     while (j < second.children.size()) {
-	        Node childDiff = second.children[j];
-	        childDiff.tag += " [" + source2 + "]";
-	        diff.children.push_back(childDiff);
-	        ++j;
-	    }
+	while (j < second.children.size())
+	{
+		Node childDiff = second.children[j];
+		childDiff.tag += " [" + source2 + "]";
+		diff.children.push_back(childDiff);
+		++j;
+	}
 }
-void printDiff(const Node& diff, const string& indent = "", const string& source = "") {
+void printDiff(const Node &diff, const string &indent = "", const string &source = "")
+{
 	bool printAll = true;
-    if (!diff.children.empty()) {
-    	cout << indent << diff.tag << "" << endl;
-        for (const Node& child : diff.children) {
-        printDiff(child, indent + "\t", source);
-        } }
-    else {
-            if (printAll) {
-                cout << indent << diff.tag << ": " << diff.text;
-                if (!source.empty()) {
-                    cout << " [" << source << "]";
-                }
-                cout << endl;
-            }
-        }
- }
-
+	if (!diff.children.empty())
+	{
+		cout << indent << diff.tag << "" << endl;
+		for (const Node &child : diff.children)
+		{
+			printDiff(child, indent + "\t", source);
+		}
+	}
+	else
+	{
+		if (printAll)
+		{
+			cout << indent << diff.tag << ": " << diff.text;
+			if (!source.empty())
+			{
+				cout << " [" << source << "]";
+			}
+			cout << endl;
+		}
+	}
+}
 
 int main()
 {
@@ -202,7 +212,6 @@ int main()
 	compareXML(first, second, diff);
 	cout << "----------------------------------------\n";
 	printDiff(diff);
-
 
 	return 0;
 }
