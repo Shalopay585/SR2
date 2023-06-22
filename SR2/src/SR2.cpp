@@ -15,6 +15,8 @@ public:
 
 	void printTree(const string &tab) const;
 	void saveToXML(ofstream& file, const string& tab) const;
+	int counting(Node& root, string& tag);
+	void editXML(Node& root, string& tag, const string& value, int& count);
 };
 
 enum State
@@ -168,11 +170,58 @@ void saveXML(const Node& root, const string& fileName)
 	cout << "XML file saved as " << fileName << endl;
 }
 
+int Node::counting(Node& root, string& tag)
+{
+	int count = 0;
+
+	for (Node& child : root.children)
+		count += child.counting(child, tag);
+
+	if (root.tag == tag || root.tag.empty())
+		count++;
+
+	return count;
+}
+
+void Node::editXML(Node& root, string& tag, const string& value, int& count)
+{
+	static bool worked = false;
+	static vector<Node> tags;
+
+	if (count >= 2)
+	{
+		if (!worked)
+		{
+			if (root.tag == tag)
+			{
+				tags.insert(tags.end(), root.children.begin(), root.children.end());
+				cout << "Added";
+			}
+
+			for (Node& child : root.children)
+				child.editXML(child, tag, value, count);
+		}
+	}
+	else
+		if (root.children.empty())
+			if (root.tag == tag)
+				root.text = value;
+		else if (root.children.size() >= 1)
+			for (Node& child : root.children)
+				child.editXML(child, tag, value, count);
+}
+
 int main()
 {
 	Node root = parseXML("test.xml");
 	root.printTree();
 	
+	saveXML(root, "test.xml");
+
+	int count = root.counting(root, editTag);
+
+	root.editXML(root, editTag, editValue, count);
+
 	saveXML(root, "test.xml");
 
 	return 0;
