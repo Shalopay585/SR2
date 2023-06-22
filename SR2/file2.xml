@@ -26,9 +26,9 @@
     <book>
         <author>Автор 3</author>
         <title>Книга 3</title>
-        <publication>
+        <publications>
             <year>2020</year>
             <publisher>Издательство 3</publisher>
-        </publication>
+        </publications>
     </book>
 </books>
