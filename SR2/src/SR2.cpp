@@ -158,6 +158,7 @@ void compareXML(const Node &first, const Node &second, Node &diff, const string 
 		compareXML(first.children[i], second.children[j], childDiff, source1, source2);
 		if (!childDiff.tag.empty() || !childDiff.text.empty() || !childDiff.children.empty())
 		{
+			diff.tag = first.tag;
 			diff.children.push_back(childDiff);
 		}
 		++i;
@@ -179,6 +180,7 @@ void compareXML(const Node &first, const Node &second, Node &diff, const string 
 		++j;
 	}
 }
+
 void printDiff(const Node &diff, const string &indent = "", const string &source = "")
 {
 	bool printAll = true;
@@ -211,7 +213,8 @@ int main()
 	Node diff;
 	compareXML(first, second, diff);
 	cout << "----------------------------------------\n";
-	printDiff(diff);
+	// printDiff(diff);
+	diff.printTree();
 
 	return 0;
 }
