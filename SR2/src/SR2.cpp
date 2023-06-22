@@ -136,12 +136,9 @@ void Node::printTree(const string &tab = "") const
 
 void compareXML(const Node &first, const Node &second, Node &diff, const string &source1 = "", const string &source2 = "")
 {
-	if (first.tag != second.tag || first.text != second.text)
+	if (first.text != second.text)
 	{
-		if (diff.tag.empty())
-		{
-			diff.tag = first.tag;
-		}
+		diff.tag = first.tag;
 		Node firstCopy = first;
 		Node secondCopy = second;
 		firstCopy.tag = "[file1]";
@@ -153,15 +150,28 @@ void compareXML(const Node &first, const Node &second, Node &diff, const string 
 	int i = 0, j = 0;
 	while (i < first.children.size() && j < second.children.size())
 	{
-		Node childDiff;
-		compareXML(first.children[i], second.children[j], childDiff, source1, source2);
-		if (!childDiff.tag.empty() || !childDiff.text.empty() || !childDiff.children.empty())
+		if (first.children[i].tag == second.children[i].tag)
 		{
-			diff.tag = first.tag;
-			diff.children.push_back(childDiff);
+			Node childDiff;
+			compareXML(first.children[i], second.children[j], childDiff, source1, source2);
+			if (!childDiff.tag.empty() || !childDiff.text.empty() || !childDiff.children.empty())
+			{
+				diff.tag = first.tag;
+				diff.children.push_back(childDiff);
+			}
+			++i;
+			++j;
 		}
-		++i;
-		++j;
+		else
+		{
+			Node child1("[file1]"), child2("[file2]");
+			child1.children.push_back(first.children[i]);
+			child2.children.push_back(second.children[i]);
+			diff.children.push_back(child1);
+			diff.children.push_back(child2);
+			diff.tag = first.tag;
+			return;
+		}
 	}
 	while (i < first.children.size())
 	{
