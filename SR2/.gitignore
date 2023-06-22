@@ -1,2 +1,4 @@
 /Debug/
 *exe
+/src/*.exe
+/src/*.xml
