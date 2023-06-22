@@ -170,22 +170,23 @@ void compareXML(const Node &first, const Node &second, Node &diff, const string 
 			diff.children.push_back(child1);
 			diff.children.push_back(child2);
 			diff.tag = first.tag;
-			return;
+			++i;
+			++j;
 		}
 	}
 	while (i < first.children.size())
 	{
-		Node childDiff = first.children[i];
-		childDiff.tag += " [" + source1 + "]";
-		diff.children.push_back(childDiff);
+		Node child("[file1]");
+		child.children.push_back(first.children[i]);
+		diff.children.push_back(child);
 		++i;
 	}
 
 	while (j < second.children.size())
 	{
-		Node childDiff = second.children[j];
-		childDiff.tag += " [" + source2 + "]";
-		diff.children.push_back(childDiff);
+		Node child("[file2]");
+		child.children.push_back(second.children[i]);
+		diff.children.push_back(child);
 		++j;
 	}
 }
