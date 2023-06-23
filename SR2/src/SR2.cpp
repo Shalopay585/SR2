@@ -13,10 +13,10 @@ public:
 
 	Node(const string& tag) : tag(tag) {}
 
-	void printTree(const string &tab) const;
+	void printTree(const string& tab) const;
 	void saveToXML(ofstream& file, const string& tab) const;
 	int counting(Node& root, string& tag);
-	void editXML(Node& root, string& tag, const string& value, int& count);
+	void editXML(Node& root, string& tag, const string& value, int& count, vector<Node>& tags, vector<string*>& text_ptr);
 };
 
 enum State
@@ -33,9 +33,9 @@ void parseXMLNode(ifstream& file, Node& node)
 	string tag, text;
 
 	char ch;
-	while(file.get(ch))
+	while (file.get(ch))
 	{
-		switch(state)
+		switch (state)
 		{
 		case State::Text:
 			if (ch == '<')
@@ -84,7 +84,7 @@ void parseXMLNode(ifstream& file, Node& node)
 				if (tag != node.tag)
 				{
 					cerr << "Error: invalid closing tag [" << tag
-						 << "] for opening tag [" << node.tag << "] !\n";
+						<< "] for opening tag [" << node.tag << "] !\n";
 					exit(1);
 				}
 				if (node.children.size() > 0)
@@ -105,7 +105,7 @@ void parseXMLNode(ifstream& file, Node& node)
 Node parseXML(const string& fileName)
 {
 	ifstream file(fileName);
-    if (!file.is_open())
+	if (!file.is_open())
 	{
 		cerr << "Error: " << fileName << " not found!\n";
 		exit(1);
@@ -125,7 +125,7 @@ Node parseXML(const string& fileName)
 	}
 }
 
-void Node::printTree(const string &tab = "") const
+void Node::printTree(const string& tab = "") const
 {
 	string tmpTag = tag;
 	tmpTag[0] = toupper(tmpTag[0]);
@@ -183,10 +183,24 @@ int Node::counting(Node& root, string& tag)
 	return count;
 }
 
-void Node::editXML(Node& root, string& tag, const string& value, int& count)
+void tagEdit(Node& root, vector<Node>& tags, const string& value, vector<string*>& text_ptr)
+{
+	int choice;
+
+	cout << "Choose a tag to edit: ";
+
+	for (int i = 0; i < tags.size(); i++)
+		cout << "\n\n" << i + 1 << ". <" << tags[i].tag << ">" << tags[i].text << "</" << tags[i].tag << ">";
+
+	cout << "\n\nYour choice: ";
+	cin >> choice;
+
+	*text_ptr[choice - 1] = value;
+}
+
+void Node::editXML(Node& root, string& tag, const string& value, int& count, vector<Node>& tags, vector<string*>& text_ptr)
 {
 	static bool worked = false;
-	static vector<Node> tags;
 
 	if (count >= 2)
 	{
@@ -194,33 +208,47 @@ void Node::editXML(Node& root, string& tag, const string& value, int& count)
 		{
 			if (root.tag == tag)
 			{
-				tags.insert(tags.end(), root.children.begin(), root.children.end());
-				cout << "Added";
+				tags.push_back(root);
+				cout << "Added\n";
+				text_ptr.push_back(&root.text);
+				cout << "Added2\n";
 			}
 
 			for (Node& child : root.children)
-				child.editXML(child, tag, value, count);
+				child.editXML(child, tag, value, count, tags, text_ptr);
 		}
+
 	}
 	else
 		if (root.children.empty())
 			if (root.tag == tag)
+			{
 				root.text = value;
+				worked = true;
+			}
 		else if (root.children.size() >= 1)
-			for (Node& child : root.children)
-				child.editXML(child, tag, value, count);
+				for (Node& child : root.children)
+				{
+					child.editXML(child, tag, value, count, tags, text_ptr);
+					worked = true;
+				}
 }
 
 int main()
 {
+	vector<string*> text_ptr;
+
 	Node root = parseXML("test.xml");
 	root.printTree();
-	
-	saveXML(root, "test.xml");
+
+	string editTag = "year";
+	string editValue = "337";
 
 	int count = root.counting(root, editTag);
 
-	root.editXML(root, editTag, editValue, count);
+	vector<Node> tags;
+	root.editXML(root, editTag, editValue, count, tags, text_ptr);
+	tagEdit(root, tags, editValue, text_ptr);
 
 	saveXML(root, "test.xml");
 
