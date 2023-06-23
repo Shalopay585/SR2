@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 using namespace std;
 
 class Node
@@ -134,62 +135,115 @@ void Node::printTree(const string &tab = "") const
 	}
 }
 
-void compareXML(const Node &first, const Node &second, Node &diff)
+void compareXML(const Node& first, const Node& second, Node& diff)
 {
-	if (first.text != second.text)
-	{
-		diff.tag = first.tag;
-		Node firstCopy = first;
-		Node secondCopy = second;
-		firstCopy.tag = "[file1]";
-		secondCopy.tag = "[file2]";
-		diff.children.push_back(firstCopy);
-		diff.children.push_back(secondCopy);
-		return;
-	}
-	int i = 0, j = 0;
-	while (i < first.children.size() && j < second.children.size())
-	{
-		if (first.children[i].tag == second.children[i].tag)
-		{
-			Node childDiff;
-			compareXML(first.children[i], second.children[j], childDiff);
-			if (!childDiff.tag.empty() || !childDiff.text.empty() || !childDiff.children.empty())
-			{
-				diff.tag = first.tag;
-				diff.children.push_back(childDiff);
-			}
-			++i;
-			++j;
-		}
-		else
-		{
-			Node child1("[file1]"), child2("[file2]");
-			child1.children.push_back(first.children[i]);
-			child2.children.push_back(second.children[i]);
-			diff.children.push_back(child1);
-			diff.children.push_back(child2);
-			diff.tag = first.tag;
-			++i;
-			++j;
-		}
-	}
-	while (i < first.children.size())
-	{
-		Node child("[file1]");
-		child.children.push_back(first.children[i]);
-		diff.children.push_back(child);
-		++i;
-	}
+    if (first.text != second.text)
+    {
+        diff.tag = first.tag;
+        Node firstCopy = first;
+        Node secondCopy = second;
+        firstCopy.tag = "[file1]";
+        secondCopy.tag = "[file2]";
+        diff.children.push_back(firstCopy);
+        diff.children.push_back(secondCopy);
+        return;
+    }
 
-	while (j < second.children.size())
-	{
-		Node child("[file2]");
-		child.children.push_back(second.children[i]);
-		diff.children.push_back(child);
-		++j;
-	}
+    int i = 0, j = 0;
+    while (i < first.children.size() && j < second.children.size())
+    {
+        if (first.children[i].tag == second.children[j].tag)
+        {
+            Node childDiff;
+            compareXML(first.children[i], second.children[j], childDiff);
+            if (!childDiff.tag.empty() || !childDiff.text.empty() || !childDiff.children.empty())
+            {
+                diff.tag = first.tag;
+                diff.children.push_back(childDiff);
+            }
+            ++i;
+            ++j;
+        }
+        else
+        {
+            bool tagFound = false;
+            bool tagFirst = false;
+            for (int k = 0; k < second.children.size(); ++k)										//1-2
+            {
+                if (first.children[i].tag == second.children[k].tag)
+                {
+                    tagFound = true;
+                    break;
+                }
+            }
+            for(int l = 0; l < first.children.size(); ++l)											//2-1
+            {
+            	if(second.children[i].tag == first.children[l].tag)
+            	{
+            		tagFirst = true;
+            		break;
+            	}
+            }
+            if(!tagFirst)																			//2-1
+            {
+            	diff.tag = first.tag;
+            	Node child("[file2]");
+            	child.children.push_back(second.children[i]);
+            	diff.children.push_back(child);
+            	--i;
+            	return;
+            }
+            if (!tagFound)																		//1-2
+            {
+            	diff.tag = first.tag;
+                Node child("[file1]");
+                child.children.push_back(first.children[i]);
+                diff.children.push_back(child);
+                --i;
+                return;
+            }
+
+            ++i;
+        }
+    }
+
+    while (i < first.children.size())
+    {
+        Node child("[file1]");
+        child.children.push_back(first.children[i]);
+        diff.children.push_back(child);
+        ++i;
+    }
+
+    while (j < second.children.size())
+    {
+        bool tagFound = false;
+        for (int k = 0; k < first.children.size(); ++k)
+        {
+            if (second.children[j].tag == first.children[k].tag)
+            {
+                tagFound = true;
+                break;
+            }
+        }
+
+        if (!tagFound)
+        {
+            Node child("[file2]");
+            child.children.push_back(second.children[j]);
+            diff.children.push_back(child);
+        }
+
+        ++j;
+    }
 }
+
+
+
+
+
+
+
 
 int main()
 {
@@ -202,3 +256,4 @@ int main()
 
 	return 0;
 }
+
