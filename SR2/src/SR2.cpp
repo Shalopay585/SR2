@@ -209,7 +209,7 @@ void addTagToFile(Node& root, const string& tag, const string& value)
 	Node newNode(tag);
 	newNode.text = value;
 	root.children.push_back(newNode);
-	cout << "\nAdded tag <" << tag << ">" << endl;
+	cout << "\nThere is no such tag. The new tag <" << tag << "> was added." << endl;
 }
 
 void Node::editXML(Node& root, string& tag, const string& value, int& count, vector<Node>& tags, vector<string*>& text_ptr, bool& worked)
