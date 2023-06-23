@@ -194,8 +194,10 @@ void tagEdit(vector<Node *> &tags, const string &value)
 	std::cout << "Choose a tag to edit: ";
 
 	for (int i = 0; i < tags.size(); i++)
-		std::cout << "\n\n"
-				  << i + 1 << ". <" << tags[i]->tag << ">" << tags[i]->text << "</" << tags[i]->tag << ">";
+	{
+			std::cout << "\n\n" << i + 1 << endl;
+			tags[i]->printTree();
+	}
 
 	std::cout << "\n\nYour choice: ";
 	std::cin >> choice;
@@ -210,11 +212,6 @@ void tagEdit(vector<Node *> &tags, const string &value)
 
 void addTagToFile(Node &root, vector<Node *> &tags, const string &newTag, const string &value)
 {
-	// Node newNode(tag);
-	// newNode.text = value;
-	// root.children.push_back(newNode);
-	// std::cout << "\nThere is no such tag. The new tag <" << tag << "> was added." << endl;
-
 	std::cout << "There is no such tag. We will add a new one.\n\n";
 	root.printTree();
 
@@ -225,6 +222,10 @@ void addTagToFile(Node &root, vector<Node *> &tags, const string &newTag, const 
 	{
 		std::cout << "\nChoose the tag, in which we will add a new one: ";
 		std::cin >> tagInWhichToAdd;
+		for (char& ch : tagInWhichToAdd)
+		{
+			ch = tolower(ch);
+		}
 		tagCount = root.counting(tagInWhichToAdd);
 	} while (tagCount < 1);
 
@@ -241,8 +242,8 @@ void addTagToFile(Node &root, vector<Node *> &tags, const string &newTag, const 
 
 		for (int i = 0; i < tags.size(); i++)
 		{
-			std::cout << "\n\n"
-					  << i + 1 << ". <" << tags[i]->tag << ">" << tags[i]->text << "</" << tags[i]->tag << ">";
+			std::cout << "\n\n" << i + 1 << endl;
+			tags[i]->printTree();
 		}
 
 		std::cout << "\n\nYour choice: ";
@@ -271,7 +272,7 @@ void Node::editXML(string &tag, const string &value, int &count, vector<Node *> 
 
 void menu(Node &root, bool worked)
 {
-	int choice = 0, returning = 0, count = 0;
+	int choice = 0, count = 0;
 	string newTag = "", newValue = "";
 	vector<Node *> tags;
 
@@ -283,13 +284,20 @@ void menu(Node &root, bool worked)
 		switch (choice)
 		{
 		case 1:
+			system("cls");
 			root.printTree();
 
 			std::cout << "\n\nEnter a tag to edit: ";
 			std::cin.ignore();
 			getline(std::cin, newTag);
+			for (char& ch : newTag)
+			{
+				ch = tolower(ch);
+			}
 			std::cout << "\nEnter a new value for the tag: ";
 			getline(std::cin, newValue);
+
+			system("cls");
 
 			count = root.counting(newTag);
 			if (count < 1)
@@ -324,15 +332,9 @@ void menu(Node &root, bool worked)
 
 			break;
 		case 4:
-
+			system("cls");
 			root.printTree();
-
-			std::cout << endl
-					  << "Enter 0 to return to menu: ";
-			std::cin >> returning;
-
-			if (returning == 0)
-				system("cls");
+			cout << "\n\n";
 
 			break;
 		case 5:
