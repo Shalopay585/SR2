@@ -1,31 +1,36 @@
 <books>
 
-    <book><author>Нестайко Всеволод</author>
+	<book>
 
-    <title>Тореадори з Васюківки. Велике ілюстроване видання. Книга перша</title>
+		<author>Gadza 1488</author>
 
-    <publication>
+		<title>Тореадори з Васюківки. Велике ілюстроване видання. Книга перша</title>
 
-        <year>2023</year>
+		<publication>
 
-        <publisher>Абабагаламага</publisher>
+			<year>2023</year>
 
-    </publication>
+			<publisher>Абабагаламага</publisher>
 
-    </book>
+		</publication>
 
-    <book><author>Матіос Марія</author>
+	</book>
 
-    <title>Букова земля</title>
+	<book>
 
-    <publication>
+		<author>Матіос Марія</author>
 
-        <year>2019</year>
+		<title>Букова земля</title>
 
-        <publisher>Абабагаламага</publisher>
+		<publication>
 
-    </publication>
+			<year>2019</year>
 
-    </book>
+			<publisher>Абабагаламага</publisher>
+
+		</publication>
+
+	</book>
 
 </books>
+
