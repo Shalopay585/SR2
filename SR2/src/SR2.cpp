@@ -15,6 +15,7 @@ public:
 	Node(const string &tag) : tag(tag) {}
 	Node(const string &tag, const string &text) : tag(tag), text(text) {}
 
+
 	void printTree(const string &tab) const;
 	void saveToXML(ofstream &file, const string &tab) const;
 	int counting(string &tag);
@@ -131,7 +132,9 @@ void Node::printTree(const string &tab = "") const
 {
 	string tmpTag = tag;
 	tmpTag[0] = toupper(tmpTag[0]);
+
 	std::cout << tab << tmpTag << ": " << text << endl;
+
 	for (const Node &child : children)
 	{
 		child.printTree(tab + '\t');
