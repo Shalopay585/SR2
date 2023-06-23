@@ -1,34 +1,34 @@
 <books>
-    <book>
-        <author>Нестайко Всеволод</author>
-        <title>Тореадори з Васюківки. Велике ілюстроване видання. Книга перша</title>
-        <publication>
-            <year>2023</year>
-            <publisher>Абабагаламага</publisher>
-        </publication>
-    </book>
-    <book>
-        <author>Матіос Марія</author>
-        <title>Букова земля</title>
-        <publication>
-            <year>2021</year>
-            <publisher>Абабагаламага</publisher>
-        </publication>
-    </book>
-    <book>
-        <author>Автор 2</author>
-        <title>Книга 2</title>
-        <publication>
-            <year>2021</year>
-            <publisher>Издательство 2</publisher>
-        </publication>
-    </book>
-    <book>
-        <author>Автор 3</author>
-        <title>Книга 3</title>
-        <publications>
-            <year>2020</year>
-            <publisher>Издательство 3</publisher>
-        </publications>
-    </book>
+	<book>
+		<author>Всеволод Нестайко</author>
+		<title>Тореадори з Васюківки. Велике ілюстроване видання. Книга перша</title>
+		<publication>
+			<year>2021</year>
+			<publisher>Абабагаламага</publisher>
+		</publication>
+	</book>
+	<book>
+		<author>Матіос Марія</author>
+		<title>Букова земля</title>
+		<publication>
+			<year>2019</year>
+			<publisher>Абабагаламага</publisher>
+		</publication>
+	</book>
+	<book>
+		<author>Автор 1</author>
+		<title>Книга 1</title>
+		<publication>
+			<year>2022</year>
+			<publisher>Издательство 1</publisher>
+		</publication>
+	</book>
+	<book>
+		<author>Автор 3</author>
+		<title>Книга 3</title>
+		<publication>
+			<year>2020</year>
+			<publisher>Издательство 3</publisher> 
+		</publication>
+	</book>
 </books>

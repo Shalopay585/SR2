@@ -1,10 +1,9 @@
 <books>
 	<book>
-        <material>Бумага</material>
-		<author>Нестайко Всеволод</author>
+		<author>Всеволод Нестайко</author>
 		<title>Тореадори з Васюківки. Велике ілюстроване видання. Книга перша</title>
 		<publication>
-			<year>2023</year>
+			<year>2021</year>
 			<publisher>Абабагаламага</publisher>
 		</publication>
 	</book>
@@ -20,7 +19,8 @@
 		<author>Автор 1</author>
 		<title>Книга 1</title>
 		<publication>
-			<year>2022</year>
+			<materials>Бумага</materials>
+			<year>2007</year>
 			<publisher>Издательство 1</publisher>
 		</publication>
 	</book>
@@ -29,7 +29,7 @@
 		<title>Книга 3</title>
 		<publication>
 			<year>2020</year>
-			<publisher>Издательство 3</publisher>
+			<publisher>Издательство 3</publisher> 
 		</publication>
 	</book>
 </books>
