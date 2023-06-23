@@ -13,11 +13,12 @@ public:
 	vector<Node> children;
 
 	Node(const string &tag) : tag(tag) {}
+	Node(const string &tag, const string &text) : tag(tag), text(text) {}
 
 	void printTree(const string &tab) const;
 	void saveToXML(ofstream &file, const string &tab) const;
-	int counting(Node &root, string &tag);
-	void editXML(Node &root, string &tag, const string &value, int &count, vector<Node> &tags, bool &worked);
+	int counting(string &tag);
+	bool editXML(string &tag, const string &value, int &count, vector<Node *> &tags);
 };
 
 enum State
@@ -173,20 +174,20 @@ void saveXML(const Node &root, const string &fileName)
 	std::cout << "XML file saved as " << fileName << endl;
 }
 
-int Node::counting(Node &root, string &tag)
+int Node::counting(string &tag)
 {
 	int count = 0;
 
-	for (Node &child : root.children)
-		count += child.counting(child, tag);
+	for (Node &child : children)
+		count += child.counting(tag);
 
-	if (root.tag == tag || root.tag.empty())
+	if (this->tag == tag || this->tag.empty())
 		count++;
 
 	return count;
 }
 
-void tagEdit(Node &root, vector<Node> &tags, const string &value)
+void tagEdit(vector<Node *> &tags, const string &value)
 {
 	int choice;
 
@@ -194,13 +195,12 @@ void tagEdit(Node &root, vector<Node> &tags, const string &value)
 
 	for (int i = 0; i < tags.size(); i++)
 		std::cout << "\n\n"
-				  << i + 1 << ". <" << tags[i].tag << ">" << tags[i].text << "</" << tags[i].tag << ">";
+				  << i + 1 << ". <" << tags[i]->tag << ">" << tags[i]->text << "</" << tags[i]->tag << ">";
 
 	std::cout << "\n\nYour choice: ";
-	cin >> choice;
+	std::cin >> choice;
 
-	//*text_ptr[choice - 1] = value;
-	tags[choice - 1].text = value;
+	tags[choice - 1]->text = value;
 
 	std::cout
 		<< "\nThe tag was updated successfully!";
@@ -208,52 +208,86 @@ void tagEdit(Node &root, vector<Node> &tags, const string &value)
 	tags.clear();
 }
 
-void addTagToFile(Node &root, const string &tag, const string &value)
+void addTagToFile(Node &root, vector<Node *> &tags, const string &newTag, const string &value)
 {
-	Node newNode(tag);
-	newNode.text = value;
-	root.children.push_back(newNode);
-	std::cout << "\nThere is no such tag. The new tag <" << tag << "> was added." << endl;
+	// Node newNode(tag);
+	// newNode.text = value;
+	// root.children.push_back(newNode);
+	// std::cout << "\nThere is no such tag. The new tag <" << tag << "> was added." << endl;
+
+	std::cout << "There is no such tag. We will add a new one.\n\n";
+	root.printTree();
+
+	string tagInWhichToAdd;
+	int tagCount;
+
+	do
+	{
+		std::cout << "\nChoose the tag, in which we will add a new one: ";
+		std::cin >> tagInWhichToAdd;
+		tagCount = root.counting(tagInWhichToAdd);
+	} while (tagCount < 1);
+
+	root.editXML(tagInWhichToAdd, value, tagCount, tags);
+
+	int choice;
+
+	for (int i = 0; i < tags.size(); i++)
+	{
+		std::cout << "\n\n"
+				  << i + 1 << ". <" << tags[i]->tag << ">" << tags[i]->text << "</" << tags[i]->tag << ">";
+	}
+
+	std::cout << "\n\nYour choice: ";
+	std::cin >> choice;
+
+	// tags[choice - 1].text = value;
+	tags[choice - 1]->children.push_back(Node(newTag, value));
+
+	std::cout << "\nThe tag was added successfully!";
+
+	tags.clear();
 }
 
-void Node::editXML(Node &root, string &tag, const string &value, int &count, vector<Node> &tags, bool &worked)
+bool Node::editXML(string &tag, const string &value, int &count, vector<Node *> &tags)
 {
+	bool worked = false;
 	if (count >= 2)
 	{
-		if (!worked)
+		if (this->tag == tag)
 		{
-			if (root.tag == tag)
-			{
-				tags.push_back(root);
-			}
+			tags.push_back(this);
+		}
 
-			for (Node &child : root.children)
-				child.editXML(child, tag, value, count, tags, worked);
-		}
+		for (Node &child : children)
+			child.editXML(tag, value, count, tags);
 	}
-	else if (!root.children.empty())
-		for (Node &child : root.children)
+	else if (!children.empty())
+		for (Node &child : children)
 		{
 			worked = true;
-			child.editXML(child, tag, value, count, tags, worked);
+			child.editXML(tag, value, count, tags);
 		}
-	else if (root.children.empty())
-		if (root.tag == tag)
+	else if (children.empty())
+		if (this->tag == tag)
 		{
 			worked = true;
-			root.text = value;
+			text = value;
 		}
+
+	return worked;
 }
 
-void menu(Node &root, vector<Node> &tags, bool worked)
+void menu(Node &root, bool worked)
 {
-	int choice, returning;
-	string newTag, newValue;
+	int choice = 0, returning = 0, count = 0;
+	string newTag = "", newValue = "";
+	vector<Node *> tags;
 
 	do
 	{
 		std::cout << "1 - Edit tags\n2 - Save file\n3 - Compare two files\n4 - Print file\n5 - Exit\n\nYour choice: ";
-		cin >> choice;
+		std::cin >> choice;
 
 		switch (choice)
 		{
@@ -261,19 +295,18 @@ void menu(Node &root, vector<Node> &tags, bool worked)
 			root.printTree();
 
 			std::cout << "\n\nEnter a tag to edit: ";
-			cin.ignore();
-			getline(cin, newTag);
+			std::cin.ignore();
+			getline(std::cin, newTag);
 			std::cout << "\nEnter a new value for the tag: ";
-			getline(cin, newValue);
+			getline(std::cin, newValue);
 
-			int count = root.counting(root, newTag);
+			count = root.counting(newTag);
 			if (count < 1)
-				addTagToFile(root, newTag, newValue);
+				addTagToFile(root, tags, newTag, newValue);
 			else
 			{
-				root.editXML(root, newTag, newValue, count, tags, worked);
-				if (!worked)
-					tagEdit(root, tags, newValue);
+				if (!root.editXML(newTag, newValue, count, tags))
+					tagEdit(tags, newValue);
 				else
 					std::cout << "\nThe tag was updated successfully!";
 			}
@@ -300,7 +333,7 @@ void menu(Node &root, vector<Node> &tags, bool worked)
 
 			std::cout << endl
 					  << "Enter 0 to return to menu: ";
-			cin >> returning;
+			std::cin >> returning;
 
 			if (returning == 0)
 				system("cls");
@@ -314,11 +347,13 @@ void menu(Node &root, vector<Node> &tags, bool worked)
 
 int main()
 {
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+
 	Node root = parseXML("test.xml");
-	vector<Node> tags;
 	bool worked = false;
 
-	menu(root, tags, worked);
+	menu(root, worked);
 
 	return 0;
 }
