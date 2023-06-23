@@ -198,6 +198,14 @@ void tagEdit(Node& root, vector<Node>& tags, const string& value, vector<string*
 	*text_ptr[choice - 1] = value;
 }
 
+void addTagToFile(Node& root, const string& tag, const string& value)
+{
+	Node newNode(tag);
+	newNode.text = value;
+	root.children.push_back(newNode);
+	cout << "Added tag <" << tag << ">" << endl;
+}
+
 void Node::editXML(Node& root, string& tag, const string& value, int& count, vector<Node>& tags, vector<string*>& text_ptr)
 {
 	static bool worked = false;
@@ -219,6 +227,8 @@ void Node::editXML(Node& root, string& tag, const string& value, int& count, vec
 		}
 
 	}
+	else if (count < 1)
+		addTagToFile(root, "newTag", "New Value");
 	else
 		if (root.children.empty())
 			if (root.tag == tag)
@@ -241,14 +251,14 @@ int main()
 	Node root = parseXML("test.xml");
 	root.printTree();
 
-	string editTag = "year";
+	string editTag = "new";
 	string editValue = "337";
 
 	int count = root.counting(root, editTag);
 
 	vector<Node> tags;
 	root.editXML(root, editTag, editValue, count, tags, text_ptr);
-	tagEdit(root, tags, editValue, text_ptr);
+	/*tagEdit(root, tags, editValue, text_ptr);*/
 
 	saveXML(root, "test.xml");
 
