@@ -167,7 +167,7 @@ void compareXML(const Node &first, const Node &second, Node &diff)
         else
         {
             bool tagFound = false;
-            for (int k = j; k < second.children.size(); ++k)
+            for (int k = j; k < second.children.size(); ++k)							//1-2
             {
                 if (first.children[i].tag == second.children[k].tag)
                 {
@@ -189,7 +189,7 @@ void compareXML(const Node &first, const Node &second, Node &diff)
                 tagFound = false;
                 for (int k = i; k < first.children.size(); ++k)
                 {
-                    if (second.children[j].tag == first.children[k].tag)
+                    if (second.children[j].tag == first.children[k].tag)							//2-1
                     {
                         tagFound = true;
                         break;
@@ -206,22 +206,6 @@ void compareXML(const Node &first, const Node &second, Node &diff)
                 }
             }
         }
-    }
-
-    while (i < first.children.size())
-    {
-        Node child("[file1]");
-        child.children.push_back(first.children[i]);
-        diff.children.push_back(child);
-        ++i;
-    }
-
-    while (j < second.children.size())
-    {
-        Node child("[file2]");
-        child.children.push_back(second.children[j]);
-        diff.children.push_back(child);
-        ++j;
     }
 }
 int main()
