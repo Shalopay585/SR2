@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <windows.h>
+#include <limits>
 using namespace std;
 
 class Node
@@ -16,7 +18,7 @@ public:
 	void printTree(const string& tab) const;
 	void saveToXML(ofstream& file, const string& tab) const;
 	int counting(Node& root, string& tag);
-	void editXML(Node& root, string& tag, const string& value, int& count, vector<Node>& tags, vector<string*>& text_ptr);
+	void editXML(Node& root, string& tag, const string& value, int& count, vector<Node>& tags, vector<string*>& text_ptr, bool& worked);
 };
 
 enum State
@@ -196,6 +198,11 @@ void tagEdit(Node& root, vector<Node>& tags, const string& value, vector<string*
 	cin >> choice;
 
 	*text_ptr[choice - 1] = value;
+
+	cout << "\nThe tag was updated successfully!";
+
+	tags.clear();
+	text_ptr.clear();
 }
 
 void addTagToFile(Node& root, const string& tag, const string& value)
@@ -203,13 +210,11 @@ void addTagToFile(Node& root, const string& tag, const string& value)
 	Node newNode(tag);
 	newNode.text = value;
 	root.children.push_back(newNode);
-	cout << "Added tag <" << tag << ">" << endl;
+	cout << "\nAdded tag <" << tag << ">" << endl;
 }
 
-void Node::editXML(Node& root, string& tag, const string& value, int& count, vector<Node>& tags, vector<string*>& text_ptr)
+void Node::editXML(Node& root, string& tag, const string& value, int& count, vector<Node>& tags, vector<string*>& text_ptr, bool& worked)
 {
-	static bool worked = false;
-
 	if (count >= 2)
 	{
 		if (!worked)
@@ -217,50 +222,103 @@ void Node::editXML(Node& root, string& tag, const string& value, int& count, vec
 			if (root.tag == tag)
 			{
 				tags.push_back(root);
-				cout << "Added\n";
 				text_ptr.push_back(&root.text);
-				cout << "Added2\n";
 			}
 
 			for (Node& child : root.children)
-				child.editXML(child, tag, value, count, tags, text_ptr);
+				child.editXML(child, tag, value, count, tags, text_ptr, worked);
 		}
-
 	}
-	else if (count < 1)
-		addTagToFile(root, "newTag", "New Value");
 	else
-		if (root.children.empty())
+		if (!root.children.empty())
+			for (Node& child : root.children)
+			{
+				worked = true;
+				child.editXML(child, tag, value, count, tags, text_ptr, worked);
+			}
+		else if (root.children.empty())
 			if (root.tag == tag)
 			{
-				root.text = value;
 				worked = true;
+				root.text = value;
 			}
-		else if (root.children.size() >= 1)
-				for (Node& child : root.children)
+}
+
+void menu(Node& root, vector<Node>& tags, vector<string*>& text_ptr, static bool worked)
+{
+	int choice, returning;
+	string newTag, newValue;
+
+	do
+	{
+		cout << "1 - Edit tags\n2 - Save file\n3 - Compare two files\n4 - Print file\n5 - Exit\n\nYour choice: ";
+		cin >> choice;
+
+		switch (choice)
+		{
+		case 1:
+			root.printTree();
+
+			cout << "\n\nEnter a tag to edit: ";
+			cin.ignore();
+			getline(cin, newTag);
+			cout << "\nEnter a new value for the tag: ";
+			getline(cin, newValue);
+			{
+				int count = root.counting(root, newTag);
+				if (count < 1)
+					addTagToFile(root, newTag, newValue);
+				else
 				{
-					child.editXML(child, tag, value, count, tags, text_ptr);
-					worked = true;
+					root.editXML(root, newTag, newValue, count, tags, text_ptr, worked);
+					if (!worked)
+						tagEdit(root, tags, newValue, text_ptr);
+					else
+						cout << "\nThe tag was updated successfully!";
 				}
+
+			}
+			Sleep(3000);
+			system("cls");
+
+			break;
+		case 2:
+			saveXML(root, "test.xml");
+
+			Sleep(3000);
+			system("cls");
+
+			break;
+		case 3:
+
+			//Here will be compare function
+
+			break;
+		case 4:
+
+			root.printTree();
+
+			cout << endl << "Enter 0 to return to menu: ";
+			cin >> returning;
+
+			if (returning == 0)
+				system("cls");
+
+			break;
+		case 5:
+			break;
+		}
+	} while (choice != 5);
 }
 
 int main()
 {
-	vector<string*> text_ptr;
-
 	Node root = parseXML("test.xml");
-	root.printTree();
-
-	string editTag = "new";
-	string editValue = "337";
-
-	int count = root.counting(root, editTag);
-
+	vector<string*> text_ptr;
 	vector<Node> tags;
-	root.editXML(root, editTag, editValue, count, tags, text_ptr);
-	/*tagEdit(root, tags, editValue, text_ptr);*/
+	bool worked = false;
 
-	saveXML(root, "test.xml");
+	menu(root, tags, text_ptr, worked);
 
 	return 0;
 }
