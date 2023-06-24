@@ -216,6 +216,7 @@ int chooseTag(vector<Node *> &tags)
 
 	std::cout << "\n\nYour choice: ";
 	std::cin >> choice;
+	std::cin.ignore();
 	return choice;
 }
 
@@ -224,7 +225,6 @@ string getString(const string &msg)
 	string input;
 
 	std::cout << msg;
-	std::cin.ignore();
 	getline(std::cin, input);
 	return input;
 }
@@ -353,7 +353,8 @@ void compareXML(Node &first, Node &second, Node &diff)
                 {
                     diff.tag = first.tag;
                     Node child("[file1]");
-					child.children.push_back(second.children[i]);
+					if (second.countTags(first.children[i].tag))
+                        child.children.push_back(second.children[i]);
                     child.children.push_back(first.children[i]);
                     diff.children.push_back(child);
                     ++i;
@@ -363,7 +364,8 @@ void compareXML(Node &first, Node &second, Node &diff)
                     diff.tag = first.tag;
                     Node child("[file2]");
                     child.children.push_back(second.children[j]);
-					child.children.push_back(first.children[j]);
+					if (first.countTags(second.children[j].tag))
+                        child.children.push_back(first.children[j]);
                     diff.children.push_back(child);
                     ++j;
                 }
@@ -382,6 +384,7 @@ void menu(Node &root)
 	{
 		std::cout << "1 - Edit tags\n2 - Save file\n3 - Compare two files\n4 - Print file\n5 - Exit\n\nYour choice: ";
 		std::cin >> choice;
+		std::cin.ignore();
 
 		switch (choice)
 		{
