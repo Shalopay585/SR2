@@ -202,6 +202,32 @@ void saveXML(const Node &root, const string &fileName)
 	std::cout << "XML file saved as " << fileName << endl;
 }
 
+int chooseTag(vector<Node *> &tags)
+{
+	int choice;
+	std::cout << "Choose a tag: ";
+
+	for (int i = 0; i < tags.size(); i++)
+	{
+		std::cout << "\n\n" << i + 1 << ".\n";
+		tags[i]->printTree();
+	}
+
+	std::cout << "\n\nYour choice: ";
+	std::cin >> choice;
+	return choice;
+}
+
+string getString(const string& msg)
+{
+	string input;
+
+	std::cout << msg;
+	std::cin.ignore();
+	getline(std::cin, input);
+	return input;
+}
+
 void tagEdit(vector<Node *> &tags, const string &value)
 {
 	if (tags.size() == 1)
@@ -210,19 +236,7 @@ void tagEdit(vector<Node *> &tags, const string &value)
 	}
 	else
 	{
-		int choice;
-
-		std::cout << "Choose a tag to edit: ";
-
-		for (int i = 0; i < tags.size(); i++)
-		{
-			std::cout << "\n\n" << i + 1 << ".\n";
-			tags[i]->printTree();
-		}
-
-		std::cout << "\n\nYour choice: ";
-		std::cin >> choice;
-
+		int choice = chooseTag(tags);
 		tags[choice - 1]->text = value;
 	}
 
@@ -230,18 +244,17 @@ void tagEdit(vector<Node *> &tags, const string &value)
 	tags.clear();
 }
 
-void addNewTag(Node &root, vector<Node *> &tags, const string &userTag, const string &value)
+void addNewTag(Node &root, const string &userTag, const string &value)
 {
+	string tagInWhichToAdd;
+	vector<Node *> tags;
+
 	std::cout << "There is no such tag. We will add a new one.\n\n";
 	root.printTree();
 
-	string tagInWhichToAdd;
-
 	do
 	{
-		std::cout << "\nChoose the tag, in which we will add a new one: ";
-		std::cin.ignore();
-		getline(std::cin, tagInWhichToAdd);
+		tagInWhichToAdd = getString("\nChoose a tag, in which we will add a new one: ");
 		for (char& ch : tagInWhichToAdd)
 		{
 			ch = tolower(ch);
@@ -257,16 +270,7 @@ void addNewTag(Node &root, vector<Node *> &tags, const string &userTag, const st
 	}
 	else
 	{
-		int choice;
-
-		for (int i = 0; i < tags.size(); i++)
-		{
-			std::cout << "\n\n" << i + 1 << endl;
-			tags[i]->printTree();
-		}
-
-		std::cout << "\n\nYour choice: ";
-		std::cin >> choice;
+		int choice = chooseTag(tags);
 
 		tags[choice - 1]->children.push_back(Node(userTag, value));
 		tags[choice - 1]->text.clear();
@@ -294,21 +298,18 @@ void menu(Node &root)
 			system("cls");
 			root.printTree();
 
-			std::cout << "\n\nEnter a tag to edit: ";
-			std::cin.ignore();
-			getline(std::cin, userTag);
+			userTag = getString("\n\nEnter a tag to edit: ");
 			for (char& ch : userTag)
 			{
 				ch = tolower(ch);
 			}
-			std::cout << "\nEnter a new value for the tag: ";
-			getline(std::cin, userValue);
+			userValue = getString("\nEnter a new value for the tag: ");
 
 			system("cls");
 
 			if (root.countTags(userTag) < 1)
 			{
-				addNewTag(root, tags, userTag, userValue);
+				addNewTag(root, userTag, userValue);
 			}
 			else
 			{
@@ -322,9 +323,7 @@ void menu(Node &root)
 			break;
 		case 2:
 			system("cls");
-			std::cout << "Enter the name of the file to save in (without .xml): ";
-			std::cin.ignore();
-			getline(std::cin, fileName);
+			fileName = getString("Enter the name of the file to save in (without .xml): ");
 			saveXML(root, fileName + ".xml");
 
 			Sleep(3000);
