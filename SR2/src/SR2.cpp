@@ -17,7 +17,7 @@ public:
 
 
 	void printTree(const string &tab) const;
-	void saveToXML(ofstream &file, const string &tab) const;
+	void saveNodeToFile(ofstream &file, const string &tab) const;
 	int counting(string &tag);
 	void editXML(string &tag, const string &value, int &count, vector<Node *> &tags);
 };
@@ -141,7 +141,7 @@ void Node::printTree(const string &tab = "") const
 	}
 }
 
-void Node::saveToXML(ofstream &file, const string &tab) const
+void Node::saveNodeToFile(ofstream &file, const string &tab = "") const
 {
 	file << tab << "<" << tag << ">";
 
@@ -150,18 +150,16 @@ void Node::saveToXML(ofstream &file, const string &tab) const
 
 	if (!children.empty())
 	{
-		file << endl
-			 << endl;
+		file << endl;
 		for (const Node &child : children)
-			child.saveToXML(file, tab + '\t');
+			child.saveNodeToFile(file, tab + '\t');
 
 		file << tab;
 	}
 
-	file << "</" << tag << ">" << endl
-		 << endl;
+	file << "</" << tag << ">" << endl;
 }
-// merge into one function
+
 void saveXML(const Node &root, const string &fileName)
 {
 	ofstream file(fileName);
@@ -171,7 +169,7 @@ void saveXML(const Node &root, const string &fileName)
 		exit(1);
 	}
 
-	root.saveToXML(file, "");
+	root.saveNodeToFile(file);
 
 	file.close();
 	std::cout << "XML file saved as " << fileName << endl;
@@ -224,7 +222,8 @@ void addTagToFile(Node &root, vector<Node *> &tags, const string &newTag, const 
 	do
 	{
 		std::cout << "\nChoose the tag, in which we will add a new one: ";
-		std::cin >> tagInWhichToAdd;
+		std::cin.ignore();
+		getline(std::cin, tagInWhichToAdd);
 		for (char& ch : tagInWhichToAdd)
 		{
 			ch = tolower(ch);
@@ -276,7 +275,7 @@ void Node::editXML(string &tag, const string &value, int &count, vector<Node *> 
 void menu(Node &root, bool worked)
 {
 	int choice = 0, count = 0;
-	string newTag = "", newValue = "";
+	string newTag, newValue, fileName;
 	vector<Node *> tags;
 
 	do
@@ -323,7 +322,11 @@ void menu(Node &root, bool worked)
 
 			break;
 		case 2:
-			saveXML(root, "test.xml");
+			system("cls");
+			std::cout << "Enter the name of the file to save in (without .xml): ";
+			std::cin.ignore();
+			getline(std::cin, fileName);
+			saveXML(root, fileName + ".xml");
 
 			Sleep(3000);
 			system("cls");
@@ -337,7 +340,7 @@ void menu(Node &root, bool worked)
 		case 4:
 			system("cls");
 			root.printTree();
-			cout << "\n\n";
+			std::cout << "\n\n";
 
 			break;
 		case 5:
@@ -348,6 +351,7 @@ void menu(Node &root, bool worked)
 
 int main()
 {
+	setlocale(LC_ALL, "rus");
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
