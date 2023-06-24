@@ -167,36 +167,48 @@ void compareXML(const Node &first, const Node &second, Node &diff)
         else
         {
             bool tagFound = false;
-            for (int k = j; k < second.children.size(); ++k)							//1-2
+            int foundIndex = -1;
+            for (int k = j; k < second.children.size(); ++k)
             {
                 if (first.children[i].tag == second.children[k].tag)
                 {
                     tagFound = true;
+                    foundIndex = k;
                     break;
                 }
             }
 
-            if (!tagFound)
+            if (tagFound && foundIndex > j)
             {
                 diff.tag = first.tag;
-                Node child("[file1]");
-                child.children.push_back(first.children[i]);
+                Node child("[file2]");
+                child.children.push_back(second.children[j]);
                 diff.children.push_back(child);
-                ++i;
+                ++j;
             }
             else
             {
                 tagFound = false;
+                foundIndex = -1;
                 for (int k = i; k < first.children.size(); ++k)
                 {
-                    if (second.children[j].tag == first.children[k].tag)							//2-1
+                    if (second.children[j].tag == first.children[k].tag)
                     {
                         tagFound = true;
+                        foundIndex = k;
                         break;
                     }
                 }
 
-                if (!tagFound)
+                if (tagFound && foundIndex > i)
+                {
+                    diff.tag = first.tag;
+                    Node child("[file1]");
+                    child.children.push_back(first.children[i]);
+                    diff.children.push_back(child);
+                    ++i;
+                }
+                else
                 {
                     diff.tag = first.tag;
                     Node child("[file2]");
@@ -208,6 +220,7 @@ void compareXML(const Node &first, const Node &second, Node &diff)
         }
     }
 }
+
 int main()
 {
 	Node first = parseXML("file1.xml");
