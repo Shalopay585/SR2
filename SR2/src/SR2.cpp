@@ -23,7 +23,6 @@ public:
 	Node(const string &tag) : tag(tag) {}
 	Node(const string &tag, const string &text) : tag(tag), text(text) {}
 
-
 	void printTree(const string &tab) const;
 	void saveNodeToFile(ofstream &file, const string &tab) const;
 	int countTags(string &tag);
@@ -209,7 +208,8 @@ int chooseTag(vector<Node *> &tags)
 
 	for (int i = 0; i < tags.size(); i++)
 	{
-		std::cout << "\n\n" << i + 1 << ".\n";
+		std::cout << "\n\n"
+				  << i + 1 << ".\n";
 		tags[i]->printTree();
 	}
 
@@ -218,7 +218,7 @@ int chooseTag(vector<Node *> &tags)
 	return choice;
 }
 
-string getString(const string& msg)
+string getString(const string &msg)
 {
 	string input;
 
@@ -255,7 +255,7 @@ void addNewTag(Node &root, const string &userTag, const string &value)
 	do
 	{
 		tagInWhichToAdd = getString("\nChoose a tag, in which we will add a new one: ");
-		for (char& ch : tagInWhichToAdd)
+		for (char &ch : tagInWhichToAdd)
 		{
 			ch = tolower(ch);
 		}
@@ -299,7 +299,7 @@ void menu(Node &root)
 			root.printTree();
 
 			userTag = getString("\n\nEnter a tag to edit: ");
-			for (char& ch : userTag)
+			for (char &ch : userTag)
 			{
 				ch = tolower(ch);
 			}
