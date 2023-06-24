@@ -379,6 +379,7 @@ void menu(Node &root)
 	int choice = 0;
 	string userTag, userValue, fileName;
 	vector<Node *> tags;
+	Node root2, difference;
 
 	do
 	{
@@ -389,7 +390,7 @@ void menu(Node &root)
 		switch (choice)
 		{
 		case 1:
-			system("cls");
+			std::system("cls");
 			root.printTree();
 
 			userTag = getString("\n\nEnter a tag to edit: ");
@@ -399,7 +400,7 @@ void menu(Node &root)
 			}
 			userValue = getString("\nEnter a new value for the tag: ");
 
-			system("cls");
+			std::system("cls");
 
 			if (root.countTags(userTag) < 1)
 			{
@@ -412,25 +413,28 @@ void menu(Node &root)
 			}
 
 			Sleep(3000);
-			system("cls");
+			std::system("cls");
 
 			break;
 		case 2:
-			system("cls");
+			std::system("cls");
 			fileName = getString("Enter the name of the file to save in (without .xml): ");
 			saveXML(root, fileName + ".xml");
 
 			Sleep(3000);
-			system("cls");
+			std::system("cls");
 
 			break;
 		case 3:
-
-			// Here will be compare function
+			std::system("cls");
+			fileName = getString("Enter the name of the file to compare with (without .xml): ");
+			root2 = parseXML(fileName + ".xml");
+			compareXML(root, root2, difference);
+			difference.printTree();
 
 			break;
 		case 4:
-			system("cls");
+			std::system("cls");
 			root.printTree();
 			std::cout << "\n\n";
 
@@ -443,8 +447,11 @@ void menu(Node &root)
 
 int main()
 {
-	Node root = parseXML("test.xml");
+	string fileName = getString("Enter the name of the file to read (without .xml): ");
 
+	Node root = parseXML(fileName + ".xml");
+
+	std::system("cls");
 	menu(root);
 
 	return 0;
