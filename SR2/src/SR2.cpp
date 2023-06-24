@@ -135,7 +135,7 @@ void Node::printTree(const string &tab = "") const
 	}
 }
 
-void compareXML(const Node &first, const Node &second, Node &diff)
+void compareXML(Node &first, Node &second, Node &diff)
 {
     if (first.text != second.text)
     {
@@ -152,7 +152,7 @@ void compareXML(const Node &first, const Node &second, Node &diff)
     int i = 0, j = 0;
     while (i < first.children.size() && j < second.children.size())
     {
-        if (first.children[i].tag == second.children[j].tag)
+        if (j < second.children.size() && first.children[i].tag == second.children[j].tag)
         {
             Node childDiff;
             compareXML(first.children[i], second.children[j], childDiff);
@@ -162,7 +162,8 @@ void compareXML(const Node &first, const Node &second, Node &diff)
                 diff.children.push_back(childDiff);
             }
             ++i;
-            ++j;
+			if (j != second.children.size() - 1)
+            	++j;
         }
         else
         {
@@ -183,6 +184,7 @@ void compareXML(const Node &first, const Node &second, Node &diff)
                 diff.tag = first.tag;
                 Node child("[file2]");
                 child.children.push_back(second.children[j]);
+                child.children.push_back(first.children[j]);
                 diff.children.push_back(child);
                 ++j;
             }
@@ -199,11 +201,12 @@ void compareXML(const Node &first, const Node &second, Node &diff)
                         break;
                     }
                 }
-
+				
                 if (tagFound && foundIndex > i)
                 {
                     diff.tag = first.tag;
                     Node child("[file1]");
+					child.children.push_back(second.children[i]);
                     child.children.push_back(first.children[i]);
                     diff.children.push_back(child);
                     ++i;
@@ -213,6 +216,7 @@ void compareXML(const Node &first, const Node &second, Node &diff)
                     diff.tag = first.tag;
                     Node child("[file2]");
                     child.children.push_back(second.children[j]);
+					child.children.push_back(first.children[j]);
                     diff.children.push_back(child);
                     ++j;
                 }
