@@ -5,6 +5,14 @@
 #include <windows.h>
 using namespace std;
 
+enum State
+{
+	Text,
+	Tag,
+	OpenTag,
+	CloseTag
+};
+
 class Node
 {
 public:
@@ -18,17 +26,68 @@ public:
 
 	void printTree(const string &tab) const;
 	void saveNodeToFile(ofstream &file, const string &tab) const;
-	int counting(string &tag);
-	void editXML(string &tag, const string &value, int &count, vector<Node *> &tags);
+	int countTags(string &tag);
+	void findTags(string &tag, vector<Node *> &tags);
 };
 
-enum State
+void Node::printTree(const string &tab = "") const
 {
-	Text,
-	Tag,
-	OpenTag,
-	CloseTag
-};
+	string tmpTag = tag;
+	tmpTag[0] = toupper(tmpTag[0]);
+
+	std::cout << tab << tmpTag << ": " << text << endl;
+
+	for (const Node &child : children)
+	{
+		child.printTree(tab + '\t');
+	}
+}
+
+void Node::saveNodeToFile(ofstream &file, const string &tab = "") const
+{
+	file << tab << "<" << tag << ">";
+
+	if (!text.empty())
+	{
+		file << text;
+	}
+	if (!children.empty())
+	{
+		file << endl;
+		for (const Node &child : children)
+		{
+			child.saveNodeToFile(file, tab + '\t');
+		}
+		file << tab;
+	}
+
+	file << "</" << tag << ">" << endl;
+}
+
+int Node::countTags(string &tag)
+{
+	int count = 0;
+
+	for (Node &child : children)
+		count += child.countTags(tag);
+
+	if (this->tag == tag || this->tag.empty())
+		count++;
+
+	return count;
+}
+
+void Node::findTags(string &tag, vector<Node *> &tags)
+{
+	if (this->tag == tag)
+	{
+		tags.push_back(this);
+	}
+	for (Node &child : children)
+	{
+		child.findTags(tag, tags);
+	}
+}
 
 void parseXMLNode(ifstream &file, Node &node)
 {
@@ -128,38 +187,6 @@ Node parseXML(const string &fileName)
 	}
 }
 
-void Node::printTree(const string &tab = "") const
-{
-	string tmpTag = tag;
-	tmpTag[0] = toupper(tmpTag[0]);
-
-	std::cout << tab << tmpTag << ": " << text << endl;
-
-	for (const Node &child : children)
-	{
-		child.printTree(tab + '\t');
-	}
-}
-
-void Node::saveNodeToFile(ofstream &file, const string &tab = "") const
-{
-	file << tab << "<" << tag << ">";
-
-	if (!text.empty())
-		file << text;
-
-	if (!children.empty())
-	{
-		file << endl;
-		for (const Node &child : children)
-			child.saveNodeToFile(file, tab + '\t');
-
-		file << tab;
-	}
-
-	file << "</" << tag << ">" << endl;
-}
-
 void saveXML(const Node &root, const string &fileName)
 {
 	ofstream file(fileName);
@@ -175,49 +202,40 @@ void saveXML(const Node &root, const string &fileName)
 	std::cout << "XML file saved as " << fileName << endl;
 }
 
-int Node::counting(string &tag)
-{
-	int count = 0;
-
-	for (Node &child : children)
-		count += child.counting(tag);
-
-	if (this->tag == tag || this->tag.empty())
-		count++;
-
-	return count;
-}
-
 void tagEdit(vector<Node *> &tags, const string &value)
 {
-	int choice;
-
-	std::cout << "Choose a tag to edit: ";
-
-	for (int i = 0; i < tags.size(); i++)
+	if (tags.size() == 1)
 	{
-			std::cout << "\n\n" << i + 1 << endl;
+		tags[0]->text = value;
+	}
+	else
+	{
+		int choice;
+
+		std::cout << "Choose a tag to edit: ";
+
+		for (int i = 0; i < tags.size(); i++)
+		{
+			std::cout << "\n\n" << i + 1 << ".\n";
 			tags[i]->printTree();
+		}
+
+		std::cout << "\n\nYour choice: ";
+		std::cin >> choice;
+
+		tags[choice - 1]->text = value;
 	}
 
-	std::cout << "\n\nYour choice: ";
-	std::cin >> choice;
-
-	tags[choice - 1]->text = value;
-
-	std::cout
-		<< "\nThe tag was updated successfully!";
-
+	std::cout << "\nThe tag was updated successfully!";
 	tags.clear();
 }
 
-void addTagToFile(Node &root, vector<Node *> &tags, const string &newTag, const string &value)
+void addNewTag(Node &root, vector<Node *> &tags, const string &userTag, const string &value)
 {
 	std::cout << "There is no such tag. We will add a new one.\n\n";
 	root.printTree();
 
 	string tagInWhichToAdd;
-	int tagCount;
 
 	do
 	{
@@ -228,14 +246,13 @@ void addTagToFile(Node &root, vector<Node *> &tags, const string &newTag, const 
 		{
 			ch = tolower(ch);
 		}
-		tagCount = root.counting(tagInWhichToAdd);
-	} while (tagCount < 1);
+	} while (root.countTags(tagInWhichToAdd) < 1);
 
-	root.editXML(tagInWhichToAdd, value, tagCount, tags);
+	root.findTags(tagInWhichToAdd, tags);
 
 	if (tags.size() == 1)
 	{
-		tags[0]->children.push_back(Node(newTag, value));
+		tags[0]->children.push_back(Node(userTag, value));
 		tags[0]->text.clear();
 	}
 	else
@@ -251,7 +268,7 @@ void addTagToFile(Node &root, vector<Node *> &tags, const string &newTag, const 
 		std::cout << "\n\nYour choice: ";
 		std::cin >> choice;
 
-		tags[choice - 1]->children.push_back(Node(newTag, value));
+		tags[choice - 1]->children.push_back(Node(userTag, value));
 		tags[choice - 1]->text.clear();
 	}
 
@@ -260,22 +277,10 @@ void addTagToFile(Node &root, vector<Node *> &tags, const string &newTag, const 
 	tags.clear();
 }
 
-void Node::editXML(string &tag, const string &value, int &count, vector<Node *> &tags)
+void menu(Node &root)
 {
-	if (this->tag == tag)
-	{
-		tags.push_back(this);
-	}
-	for (Node &child : children)
-	{
-		child.editXML(tag, value, count, tags);
-	}
-}
-
-void menu(Node &root, bool worked)
-{
-	int choice = 0, count = 0;
-	string newTag, newValue, fileName;
+	int choice = 0;
+	string userTag, userValue, fileName;
 	vector<Node *> tags;
 
 	do
@@ -291,30 +296,24 @@ void menu(Node &root, bool worked)
 
 			std::cout << "\n\nEnter a tag to edit: ";
 			std::cin.ignore();
-			getline(std::cin, newTag);
-			for (char& ch : newTag)
+			getline(std::cin, userTag);
+			for (char& ch : userTag)
 			{
 				ch = tolower(ch);
 			}
 			std::cout << "\nEnter a new value for the tag: ";
-			getline(std::cin, newValue);
+			getline(std::cin, userValue);
 
 			system("cls");
 
-			count = root.counting(newTag);
-			if (count < 1)
-				addTagToFile(root, tags, newTag, newValue);
-			else if (count == 1)
+			if (root.countTags(userTag) < 1)
 			{
-				root.editXML(newTag, newValue, count, tags);
-				tags[0]->text = newValue;
-				std::cout << "\nThe tag was updated successfully!";
+				addNewTag(root, tags, userTag, userValue);
 			}
 			else
 			{
-				root.editXML(newTag, newValue, count, tags);
-				tagEdit(tags, newValue);
-				std::cout << "\nThe tag was updated successfully!";
+				root.findTags(userTag, tags);
+				tagEdit(tags, userValue);
 			}
 
 			Sleep(3000);
@@ -352,13 +351,12 @@ void menu(Node &root, bool worked)
 int main()
 {
 	setlocale(LC_ALL, "rus");
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
+	// SetConsoleCP(1251);
+	// SetConsoleOutputCP(1251);
 
 	Node root = parseXML("test.xml");
-	bool worked = false;
 
-	menu(root, worked);
+	menu(root);
 
 	return 0;
 }
