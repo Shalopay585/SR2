@@ -20,6 +20,7 @@ public:
 	string text;
 	vector<Node> children;
 
+	Node() {}
 	Node(const string &tag) : tag(tag) {}
 	Node(const string &tag, const string &text) : tag(tag), text(text) {}
 
@@ -281,6 +282,96 @@ void addNewTag(Node &root, const string &userTag, const string &value)
 	tags.clear();
 }
 
+void compareXML(Node &first, Node &second, Node &diff)
+{
+    if (first.text != second.text)
+    {
+        diff.tag = first.tag;
+        Node firstCopy = first;
+        Node secondCopy = second;
+        firstCopy.tag = "[file1]";
+        secondCopy.tag = "[file2]";
+        diff.children.push_back(firstCopy);
+        diff.children.push_back(secondCopy);
+        return;
+    }
+
+    int i = 0, j = 0;
+    while (i < first.children.size() && j < second.children.size())
+    {
+        if (j < second.children.size() && first.children[i].tag == second.children[j].tag)
+        {
+            Node childDiff;
+            compareXML(first.children[i], second.children[j], childDiff);
+            if (!childDiff.tag.empty() || !childDiff.text.empty() || !childDiff.children.empty())
+            {
+                diff.tag = first.tag;
+                diff.children.push_back(childDiff);
+            }
+            ++i;
+			if (j != second.children.size() - 1)
+            	++j;
+        }
+        else
+        {
+            bool tagFound = false;
+            int foundIndex = -1;
+            for (int k = j; k < second.children.size(); ++k)
+            {
+                if (first.children[i].tag == second.children[k].tag)
+                {
+                    tagFound = true;
+                    foundIndex = k;
+                    break;
+                }
+            }
+
+            if (tagFound && foundIndex > j)
+            {
+                diff.tag = first.tag;
+                Node child("[file2]");
+                child.children.push_back(second.children[j]);
+                child.children.push_back(first.children[j]);
+                diff.children.push_back(child);
+                ++j;
+            }
+            else
+            {
+                tagFound = false;
+                foundIndex = -1;
+                for (int k = i; k < first.children.size(); ++k)
+                {
+                    if (second.children[j].tag == first.children[k].tag)
+                    {
+                        tagFound = true;
+                        foundIndex = k;
+                        break;
+                    }
+                }
+				
+                if (tagFound && foundIndex > i)
+                {
+                    diff.tag = first.tag;
+                    Node child("[file1]");
+					child.children.push_back(second.children[i]);
+                    child.children.push_back(first.children[i]);
+                    diff.children.push_back(child);
+                    ++i;
+                }
+                else
+                {
+                    diff.tag = first.tag;
+                    Node child("[file2]");
+                    child.children.push_back(second.children[j]);
+					child.children.push_back(first.children[j]);
+                    diff.children.push_back(child);
+                    ++j;
+                }
+            }
+        }
+    }
+}
+
 void menu(Node &root)
 {
 	int choice = 0;
@@ -349,10 +440,6 @@ void menu(Node &root)
 
 int main()
 {
-	setlocale(LC_ALL, "rus");
-	// SetConsoleCP(1251);
-	// SetConsoleOutputCP(1251);
-
 	Node root = parseXML("test.xml");
 
 	menu(root);
