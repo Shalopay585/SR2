@@ -1,0 +1,32 @@
+<books>
+	<book>
+		<author>Анджей Сапковський</author>
+		<title>Час погорди</title>
+        <pages>320</pages>
+		<publication>
+			<polish>1995</polish>
+			<ukrainian>2016</ukrainian>
+		</publication>
+        <run>10000</run>
+	</book>
+	<book>
+		<author>Анджей Сапковський</author>
+		<title>Хрещення вогнем</title>
+        <pages>384</pages>
+		<publication>
+			<polish>1996</polish>
+			<ukrainian>2016</ukrainian>
+		</publication>
+        <run>11000</run>
+	</book>
+	<book>
+		<author>Анджей Сапковський</author>
+		<title>Кров ельфів</title>
+        <pages>320</pages>
+		<publication>
+			<polish>1994</polish>
+			<ukrainian>2016</ukrainian>
+		</publication>
+        <run>10000</run>
+	</book>
+</books>

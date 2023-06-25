@@ -1,0 +1,32 @@
+<books>
+	<book>
+		<author>Анджей Сапковський</author>
+		<title>Останнє бажання</title>
+        <pages>288</pages>
+		<publication>
+			<polish>1986</polish>
+			<ukrainian>2016</ukrainian>
+		</publication>
+        <run>10000</run>
+	</book>
+	<book>
+		<author>Анджей Сапковський</author>
+		<title>Меч призначення</title>
+        <pages>368</pages>
+		<publication>
+			<polish>1992</polish>
+			<ukrainian>2016</ukrainian>
+		</publication>
+        <run>10000</run>
+	</book>
+	<book>
+		<author>Анджей Сапковський</author>
+		<title>Кров ельфів</title>
+        <pages>320</pages>
+		<publication>
+			<polish>1994</polish>
+			<ukrainian>2016</ukrainian>
+		</publication>
+        <run>10000</run>
+	</book>
+</books>
