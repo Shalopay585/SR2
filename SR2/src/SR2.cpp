@@ -13,7 +13,7 @@ enum State
 	CloseTag
 };
 
-class Node
+class Node // Maxim
 {
 public:
 	string tag;
@@ -30,7 +30,7 @@ public:
 	void findTags(string &tag, vector<Node *> &tags);
 };
 
-void Node::printTree(const string &tab = "") const
+void Node::printTree(const string &tab = "") const // Maxim
 {
 	string tmpTag = tag;
 	tmpTag[0] = toupper(tmpTag[0]);
@@ -43,7 +43,7 @@ void Node::printTree(const string &tab = "") const
 	}
 }
 
-void Node::saveNodeToFile(ofstream &file, const string &tab = "") const
+void Node::saveNodeToFile(ofstream &file, const string &tab = "") const // Andrey
 {
 	file << tab << "<" << tag << ">";
 
@@ -64,7 +64,7 @@ void Node::saveNodeToFile(ofstream &file, const string &tab = "") const
 	file << "</" << tag << ">" << endl;
 }
 
-int Node::countTags(string &tag)
+int Node::countTags(string &tag) // Andrey
 {
 	int count = 0;
 
@@ -77,7 +77,7 @@ int Node::countTags(string &tag)
 	return count;
 }
 
-void Node::findTags(string &tag, vector<Node *> &tags)
+void Node::findTags(string &tag, vector<Node *> &tags) // Andrey
 {
 	if (this->tag == tag)
 	{
@@ -89,7 +89,7 @@ void Node::findTags(string &tag, vector<Node *> &tags)
 	}
 }
 
-void parseXMLNode(ifstream &file, Node &node)
+void parseXMLNode(ifstream &file, Node &node) // Maxim
 {
 	State state = State::Text;
 	string tag, text;
@@ -164,7 +164,7 @@ void parseXMLNode(ifstream &file, Node &node)
 	}
 }
 
-Node parseXML(const string &fileName)
+Node parseXML(const string &fileName) // Maxim
 {
 	ifstream file(fileName);
 	if (!file.is_open())
@@ -187,7 +187,7 @@ Node parseXML(const string &fileName)
 	}
 }
 
-void saveXML(const Node &root, const string &fileName)
+void saveXML(const Node &root, const string &fileName) // Andrey
 {
 	ofstream file(fileName);
 	if (!file.is_open())
@@ -202,7 +202,7 @@ void saveXML(const Node &root, const string &fileName)
 	std::cout << "XML file saved as " << fileName << endl;
 }
 
-int chooseTag(vector<Node *> &tags)
+int chooseTag(vector<Node *> &tags) // Andrey
 {
 	int choice;
 	std::cout << "Choose a tag: ";
@@ -220,7 +220,7 @@ int chooseTag(vector<Node *> &tags)
 	return choice;
 }
 
-string getString(const string &msg)
+string getString(const string &msg) // Maxim
 {
 	string input;
 
@@ -229,7 +229,7 @@ string getString(const string &msg)
 	return input;
 }
 
-void tagEdit(vector<Node *> &tags, const string &value)
+void tagEdit(vector<Node *> &tags, const string &value) // Andrey
 {
 	if (tags.size() == 1)
 	{
@@ -245,7 +245,7 @@ void tagEdit(vector<Node *> &tags, const string &value)
 	tags.clear();
 }
 
-void addNewTag(Node &root, const string &userTag, const string &value)
+void addNewTag(Node &root, const string &userTag, const string &value) // Andrey
 {
 	string tagInWhichToAdd;
 	vector<Node *> tags;
@@ -282,7 +282,7 @@ void addNewTag(Node &root, const string &userTag, const string &value)
 	tags.clear();
 }
 
-void compareXML(Node &first, Node &second, Node &diff)
+void compareXML(Node &first, Node &second, Node &diff) // Egor
 {
     if (first.text != second.text)
     {
@@ -374,7 +374,7 @@ void compareXML(Node &first, Node &second, Node &diff)
     }
 }
 
-void menu(Node &root)
+void menu(Node &root) // All
 {
 	int choice = 0;
 	string userTag, userValue, fileName;
